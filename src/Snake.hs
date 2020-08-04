@@ -1,12 +1,13 @@
 module Snake where
 
+import Data.List
 import System.Random
 
 type Point = (Int, Int)
 type Apple = (Int, Int)
 type Snake = [Point]
 
-data Direction = UP | DOWN | LEFT | RIGHT deriving (Eq, Show)
+data Direction = UP | DOWN | LEFT | RIGHT deriving (Eq, Show, Read)
 
 data State = State {
     snake :: Snake,
@@ -14,9 +15,23 @@ data State = State {
     width :: Int,
     height :: Int,
     moves :: [Direction]
-} deriving (Show)
+}
 
-defaultState = (State {snake=[(1, 4), (1, 3), (1, 2)], apple=(5,5), width=5, height=5, moves=[UP, LEFT]})
+instance Show State where
+    -- show s = show $ snake s
+    show s = (intercalate "\n" [[tile x y | x <- [0..w]] | y <- [0..h]]) ++ "\n"
+        where
+            tile x y
+                | (x,y) `elem` (snake s) = 'x'
+                | (x,y) == (apple s) = 'o'
+                | (x == 0 || x == w) && (y == 0 || y == h) = '+'
+                | (x == 0 || x == w) = '|'
+                | (y == 0 || y == h) = '-'
+                | otherwise = ' '
+            w = width s + 1
+            h = height s + 1
+
+defaultState = (State {snake=[(3, 2), (3, 3), (3, 4), (3, 5), (3, 6)], apple=(1,5), width=20, height=10, moves=[UP]})
 
 -- nextState state = State {
 --     snake = nextSnake state,
