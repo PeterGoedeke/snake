@@ -26,6 +26,13 @@ defaultState = (State {snake=[(1, 4), (1, 3), (1, 2)], apple=(5,5), width=5, hei
 --     moves = nextMoves state
 -- }
 
+nextState = do
+    snake <- nextSnake
+    apple <- nextApple
+    width <- width
+    height <- height
+    moves <- nextMoves
+    return (State{snake, apple, width, height, moves})
 
 nextApple :: State -> Apple
 nextApple state
