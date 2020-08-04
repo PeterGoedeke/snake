@@ -1,7 +1,7 @@
 module Snake where
 
 import Data.List
-import System.Random
+import Debug.Trace
 
 type Point = (Int, Int)
 type Apple = (Int, Int)
@@ -18,7 +18,6 @@ data State = State {
 }
 
 instance Show State where
-    -- show s = show $ snake s
     show s = (intercalate "\n" [[tile x y | x <- [0..w]] | y <- [0..h]]) ++ "\n"
         where
             tile x y
@@ -33,25 +32,21 @@ instance Show State where
 
 defaultState = (State {snake=[(3, 2), (3, 3), (3, 4), (3, 5), (3, 6)], apple=(1,5), width=20, height=10, moves=[UP]})
 
--- nextState state = State {
---     snake = nextSnake state,
---     apple = nextApple state,
---     width = width state,
---     height = height state,
---     moves = nextMoves state
--- }
+nextState :: State -> Apple -> State
+nextState state randomApple
+    | willCrash state = defaultState
+    | otherwise = progressState state
+        where progressState = do
+                snake <- nextSnake
+                apple <- nextApple randomApple
+                width <- width
+                height <- height
+                moves <- nextMoves
+                return (State{snake, apple, width, height, moves})
 
-nextState = do
-    snake <- nextSnake
-    apple <- nextApple
-    width <- width
-    height <- height
-    moves <- nextMoves
-    return (State{snake, apple, width, height, moves})
-
-nextApple :: State -> Apple
-nextApple state
-    | willEat state = apple state
+nextApple :: Point -> State -> Apple
+nextApple randomPoint state
+    | willEat state = randomPoint
     | otherwise = apple state
 
 addDirection :: Direction -> Point -> Point
@@ -94,9 +89,6 @@ nextMoves :: State -> [Direction]
 nextMoves State{moves=[x]} = [x]
 nextMoves State{moves=(x:xs)} = xs
 nextMoves State{moves=[]} = []
-
-randomList :: Int -> [Double]
-randomList seed = randoms (mkStdGen seed)
 
 -- It would be good if moves was actually a sequence in this case, rather than a list
 registerMove :: State -> Direction -> State
