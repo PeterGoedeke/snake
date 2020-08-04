@@ -60,6 +60,14 @@ addDirection DOWN = addTuple (0,1)
 addDirection LEFT = addTuple (-1,0)
 addDirection RIGHT = addTuple (1,0)
 
+-- see if there is a better way to do the pattern matching on this?
+opposite :: Direction -> Direction -> Bool
+opposite UP DOWN = True
+opposite DOWN UP = True
+opposite LEFT RIGHT = True
+opposite RIGHT LEFT = True
+opposite _ _ = False
+
 addTuple :: Point -> Point -> Point
 addTuple (a,b) (c,d) = (a+c,b+d)
 
@@ -90,11 +98,8 @@ nextMoves State{moves=[]} = []
 randomList :: Int -> [Double]
 randomList seed = randoms (mkStdGen seed)
 
-
-
--- main = do
---     seed <- randomIO
---     let
---         randoms = randomList seed
---         loop = 
---     in 
+-- It would be good if moves was actually a sequence in this case, rather than a list
+registerMove :: State -> Direction -> State
+registerMove s@(State{moves=m}) move
+    | (opposite (head m) move) = s
+    | otherwise = s{moves=([move])}
