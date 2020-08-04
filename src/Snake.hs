@@ -51,14 +51,14 @@ nextState = do
 
 nextApple :: State -> Apple
 nextApple state
-    | willCrash state = apple state
+    | willEat state = apple state
     | otherwise = apple state
 
 addDirection :: Direction -> Point -> Point
 addDirection UP = addTuple (0,-1)
 addDirection DOWN = addTuple (0,1)
-addDirection LEFT = addTuple (1,0)
-addDirection RIGHT = addTuple (-1,0)
+addDirection LEFT = addTuple (-1,0)
+addDirection RIGHT = addTuple (1,0)
 
 addTuple :: Point -> Point -> Point
 addTuple (a,b) (c,d) = (a+c,b+d)
